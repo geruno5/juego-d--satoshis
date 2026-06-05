@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Lanza y Gana Satoshis!</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #ffd700;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .reglas {
+            color: #cccccc;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+        .btn-video {
+            background-color: #00adb5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-video:hover { background-color: #007a80; }
+        .contador-videos {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .dado-container {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 20px 0;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        .girando {
+            animation: ruletaSuave 0.4s infinite ease-in-out;
+        }
+        @keyframes ruletaSuave {
+            0% { transform: scale(1); color: #ffd700; filter: drop-shadow(0 0 5px #ffd700); }
+            50% { transform: scale(1.15); color: #ff5722; filter: drop-shadow(0 0 15px #ff5722); }
+            100% { transform: scale(1); color: #ffd700; filter: drop-shadow(0 0 5px #ffd700); }
+        }
+        .btn-lanzar {
+            background-color: #ffd700;
+            color: #111;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: transform 0.1s, background 0.2s;
+        }
+        .btn-lanzar:hover { background-color: #e6c200; }
+        .btn-lanzar:active { transform: scale(0.95); }
+        .btn-lanzar:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
+        .marcador {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            background: #282828;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        #satoshis-count { color: #4caf50; font-weight: bold; }
+        .seccion-retiro {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: left;
+        }
+        .seccion-retiro h3 {
+            margin-top: 0;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .input-group select, .input-group input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #252525;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .btn-retirar {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-retirar:hover { background-color: #43a047; }
+        .btn-retirar:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        .publicidad-seccion {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 600px;
+            width: 100%;
+        }
+        .col-izquierda {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .col-derecha {
+            display: flex;
+        }
+        .anuncio-link {
+            background: #252525;
+            border: 1px dashed #444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.85rem;
+            transition: background 0.3s, border-color 0.3s;
+            padding: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .anuncio-link:hover {
+            background: #2e2e2e;
+            border-color: #ffd700;
+            color: #fff;
+        }
+        .anuncio-largo {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ ¡Lanza y Gana Satoshis! ⚡</h1>
+        <p class="reglas">Saca 4, 5 o 6 para ganar 2 Sats. Retiro mínimo: 20 Sats.</p>
+        <a href="https://effectivecpmnetwork.com" target="_blank" class="btn-video" onclick="registrarClickVideo()">📺 Ver Video (+3 Sats)</a>
+        <div class="contador-videos">Videos vistos: <span id="videos-count">0</span> / 100</div>
+        <div class="dado-container" id="dado">?</div>
+        <button class="btn-lanzar" id="btn-lanzar" onclick="lanzarDado()">¡Lanzar Dado!</button>
+        <div class="marcador">
+            Balance: <span id="satoshis-count">0</span> Sats
+        </div>
+        <div class="seccion-retiro">
+            <h3>💳 Retirar tus Satoshis</h3>
+            <div class="input-group">
+                <select id="wallet-select">
+                    <option value="speed">Speed Wallet (Lightning Address)</option>
+                    <option value="nc">NC Wallet (Lightning Address)</option>
+                    <option value="bitso">Bitso (Dirección Bitcoin / Red On-chain)</option>
+                </select>
+                <input type="text" id="wallet-address" placeholder="Introduce tu dirección o formato usuario@billetera.com">
+                <button class="btn-retirar" id="btn-retirar" onclick="procesarRetiro()" disabled>Solicitar Retiro (Mín. 20 Sats)</button>
+            </div>
+        </div>
+    </div>
+    <div class="publicidad-seccion">
+        <div class="col-izquierda">
+            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 1</a>
+            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 2</a>
+            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 3</a>
+            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 4</a>
+        </div>
+        <div class="col-derecha">
+            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link anuncio-largo">📺 Publicidad Destacada / Banner Grande</a>
+        </div>
+    </div>
+    <script>
+        const ADSTERRA_API_KEY = "72f4b19492c0338bc8b5225cd870ddd9";
+        let totalSatoshis = parseInt(localStorage.getItem('satoshis')) || 0;
+        let videosVistos = parseInt(localStorage.getItem('videosVistos')) || 0;
+        document.getElementById('satoshis-count').textContent = totalSatoshis;
+        document.getElementById('videos-count').textContent = videosVistos;
+        actualizarBotonRetiro();
+        const sonidoRuleta = new Audio('https://mixkit.co'); 
+        const sonidoMonedas = new Audio('https://mixkit.co'); 
+        sonidoRuleta.loop = true; 
+        function guardarDatos() {
+            localStorage.setItem('satoshis', totalSatoshis);
+            localStorage.setItem('videosVistos', videosVistos);
+            actualizarBotonRetiro();
+        }
+        function actualizarBotonRetiro() {
+            const btn = document.getElementById('btn-retirar');
+            btn.disabled = totalSatoshis < 20;
+        }
+        function lanzarDado() {
+            const dadoElemento = document.getElementById('dado');
+            const botonLanzar = document.getElementById('btn-lanzar');
+            botonLanzar.disabled = true;
+            dadoElemento.classList.add('girando');
+            sonidoRuleta.play().catch(e => console.log("Audio en espera"));
+            let intervaloNumeros = setInterval(() => {
+                dadoElemento.textContent = Math.floor(Math.random() * 6) + 1;
+            }, 120);
+            setTimeout(() => {
+                clearInterval(intervaloNumeros);
+                sonidoRuleta.pause();
+                sonidoRuleta.currentTime = 0;
+                dadoElemento.classList.remove('girando');
+                const resultado = Math.floor(Math.random() * 6) + 1;
+                dadoElemento.textContent = resultado;
+                if (resultado >= 4) {totalSatoshis += 2;document.getElementById('satoshis-count').textContent = totalSatoshis;sonidoMonedas.play();}guardarDatos();let tiempoEspera = 10;botonLanzar.textContent = Espera (${tiempoEspera}s);let cuentaRegresiva = setInterval(() => {tiempoEspera--;botonLanzar.textContent = Espera (${tiempoEspera}s);if (tiempoEspera <= 0) {clearInterval(cuentaRegresiva);botonLanzar.disabled = false;botonLanzar.textContent = "¡Lanzar Dado!";}}, 1000);}, 1500);}function registrarClickVideo() {if (videosVistos < 100) {videosVistos++;totalSatoshis += 3;document.getElementById('videos-count').textContent = videosVistos;document.getElementById('satoshis-count').textContent = totalSatoshis;sonidoMonedas.play();guardarDatos();}}function procesarRetiro() {const wallet = document.getElementById('wallet-select').value;const address = document.getElementById('wallet-address').value.trim();if (!address) {alert("Por favor, introduce tu dirección de billetera.");return;}alert(¡Solicitud recibida con éxito!\n\nMonto: ${totalSatoshis} Satoshis\nMétodo: ${wallet.toUpperCase()}\nDirección: ${address}\n\nLos fondos se procesarán manualmente tras verificar las estadísticas en Adsterra.);totalSatoshis = 0;document.getElementById('satoshis-count').textContent = totalSatoshis;guardarDatos();}
