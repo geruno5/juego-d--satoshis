@@ -276,7 +276,40 @@
         event.preventDefault(); 
         alert("❌ Error: Necesitas acumular al menos 20 Satoshis para solicitar un retiro.");
         return;
+    document.getElementById('formRetiro').addEventListener('submit', function(event) {
+    // 1. Frenamos por completo el envío predeterminado del navegador
+    event.preventDefault(); 
+    
+    // 2. Validamos el saldo con tu variable de Satoshis
+    if (totalSatoshis < 20) {
+        alert("❌ Error: Necesitas acumular al menos 20 Satoshis para solicitar un retiro.");
+        return; 
     }
+    
+    // 3. Introducemos los puntos en el campo oculto antes de enviar
     document.getElementById('formSats').value = totalSatoshis;
-    alert("🚀 ¡Solicitud enviada! Tu pago será procesado manualmente tras revisar que no se haya usado ningún bot.");
+    
+    // 4. Enviamos a Formspree en segundo plano
+    let formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: this.method,
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("🚀 ¡Solicitud enviada! Tu pago será procesado manualmente tras revisar las impresiones.");
+            
+            // Opcional: Reiniciar saldo en pantalla tras retirar con éxito
+            totalSatoshis = 0;
+            document.getElementById('satoshis-count').textContent = totalSatoshis; 
+            guardarDatos(); 
+        } else {
+            alert("❌ Hubo un problema con el servidor de retiros. Inténtalo más tarde.");
+        }
+    })
+    .catch(error => {
+        alert("❌ Error de conexión. Inténtalo de nuevo.");
+    });
 });
