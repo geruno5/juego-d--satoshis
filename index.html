@@ -18,15 +18,31 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+            align-items: flex-start;
+        }
         .container {
             text-align: center;
-            max-width: 600px;
-            width: 100%;
+            flex: 1;
             background: #1e1e1e;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+        }
+        .col-derecha {
+            width: 320px;
+            min-height: 600px;
+            background: #1e1e1e;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         h1 {
             color: #ffd700;
@@ -111,205 +127,127 @@
             color: #ffd700;
             font-size: 1.1rem;
         }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .input-group select, .input-group input {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #252525;
-            color: white;
-            font-size: 0.9rem;
-        }
-        .btn-retirar {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-retirar:hover { background-color: #43a047; }
-        .btn-retirar:disabled { background-color: #555; color: #888; cursor: not-allowed; }
-        .publicidad-seccion {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            max-width: 600px;
-            width: 100%;
-        }
-        .col-izquierda {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .col-derecha {
-            display: flex;
-        }
-        .anuncio-link {
-            background: #252525;
-            border: 1px dashed #444;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #aaa;
-            font-size: 0.85rem;
-            transition: background 0.3s, border-color 0.3s;
-            padding: 15px;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .anuncio-link:hover {
-            background: #2e2e2e;
-            border-color: #ffd700;
-            color: #fff;
-        }
-        .anuncio-largo {
-            width: 100%;
-            height: 100%;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ ¡Lanza y Gana Satoshis! ⚡</h1>
-        <p class="reglas">Saca 4, 5 o 6 para ganar 2 Sats. Retiro mínimo: 20 Sats.</p>
-        <a href="https://effectivecpmnetwork.com" target="_blank" class="btn-video" onclick="registrarClickVideo()">📺 Ver Video (+3 Sats)</a>
-        <div class="contador-videos">Videos vistos: <span id="videos-count">0</span> / 100</div>
-        <div class="dado-container" id="dado">?</div>
-        <button class="btn-lanzar" id="btn-lanzar" onclick="lanzarDado()">¡Lanzar Dado!</button>
-        <div class="marcador">
-            Balance: <span id="satoshis-count">0</span> Sats
+
+    <div class="main-layout">
+        <!-- Contenedor del Juego Principal -->
+        <div class="container">
+            <h1>🎲 ¡Lanza el Dado y Gana!</h1>
+            <p class="reglas">Saca un número mayor o igual a 4 para ganar 2 Satoshis. Puedes lanzar cada 5 minutos.</p>
+
+            <button class="btn-video" id="btnVideo">📺 Ver Video (+3 Sats)</button>
+            <div class="contador-videos">Videos vistos hoy: <span id="video-count">0</span>/5</div>
+
+            <div class="dado-container" id="dado">?</div>
+            <button class="btn-lanzar" id="btnLanzar">¡Lanzar Dado!</button>
+
+            <div class="marcador">
+                Tu Balance Total: <span id="satoshis-count">0</span> Satoshis
+            </div>
+
+            <!-- Sección de Retiro Blindada (Sin NC Wallet) -->
+            <div class="seccion-retiro">
+                <h3>💳 Solicitar Extracción</h3>
+                <form id="formRetiro" action="https://formspree.io" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                    
+                    <!-- Campo oculto para enviar los Satoshis acumulados reales -->
+                    <input type="hidden" name="Satoshis_A_Retirar" id="formSats" value="0">
+                    
+                    <select id="wallet-select" name="Tipo_Billetera" style="padding: 10px; border-radius: 6px; border: 1px solid #444; background: #252525; color: white;">
+                        <option value="speed">Speed Wallet (Lightning Address)</option>
+                        <option value="bitso">Bitso (Dirección Bitcoin / Red Principal)</option>
+                    </select>
+                    
+                    <input type="text" name="Direccion_Billetera" id="wallet-address" placeholder="Introduce tu dirección de cobro" required style="padding: 10px; border-radius: 6px; border: 1px solid #444; background: #252525; color: white;">
+                    
+                    <button type="submit" class="btn-lanzar" style="font-size: 1rem; padding: 12px; margin-top: 5px;">
+                        Enviar Solicitud (Mín. 20 Sats)
+                    </button>
+                </form>
+            </div>
         </div>
-        <div class="seccion-retiro">
-    <h3>💳 Retirar tus Satoshis</h3>
-    
-    <!-- INICIO DEL FORMULARIO BLINDADO -->
-    <form id="formRetiro" action="https://formspree.io" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
-        
-        <!-- Campo oculto seguro para los Satoshis -->
-        <input type="hidden" name="Satoshis_A_Retirar" id="formSats" value="0">
-        
-        <!-- Menú de selección de billetera -->
-        <select id="wallet-select" name="Tipo_Billetera" style="padding: 10px; border-radius: 5px; background: #222; color: #fff; border: 1px solid #333;">
-            <option value="speed">Speed Wallet (Lightning Address)</option>
-            <option value="nc">NC Wallet (Lightning Address)</option>
-            <option value="bitso">Bitso (Dirección Bitcoin / Red Principal)</option>
-        </select>
-        
-        <!-- Caja de texto para la dirección -->
-        <input type="text" name="Direccion_Billetera" id="wallet-address" placeholder="Introduce tu dirección de pago" required style="padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: #fff;">
-        
-        <!-- Botón de retiro -->
-        <button type="submit" class="btn-retirar" id="btn-retirar" style="padding: 10px; background-color: #ffd700; color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-            Solicitar Retiro (Mín. 20 Sats)
-        </button>
-    </form>
-    <!-- FIN DEL FORMULARIO -->
-</div>
-        </div>
-    </div>
-    <div class="publicidad-seccion">
-        <div class="col-izquierda">
-            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 1</a>
-            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 2</a>
-            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 3</a>
-            <a href="https://effectivecpmnetwork.com" target="_blank" class="anuncio-link">🔗 Enlace Descuento App 4</a>
-        </div>
+
+        <!-- Columna de Anuncios Derecha -->
         <div class="col-derecha">
-            <!-- BEGIN AADS AD UNIT 2441753 -->
-
-<div id="frame" style="width: 300px;margin: auto;z-index: 99998;height: auto">
-          <iframe data-aa='2441753' src='//ad.a-ads.com/2441753/?size=300x600'
-                            style='border:0; padding:0; width:300px; height:600px; overflow:hidden;display: block;margin: auto'></iframe>
-        </div>
-
-<!-- END AADS AD UNIT 2441753 -->
+            <iframe data-aa='2441753' src='//://a-ads.com' style='border:0; padding:0; width:300px; height:600px; overflow:hidden; display: block; margin: auto;'></iframe>
         </div>
     </div>
+
+    <!-- Lógica del Juego y Seguridad del Formulario -->
     <script>
-        const ADSTERRA_API_KEY = "72f4b19492c0338bc8b5225cd870ddd9";
         let totalSatoshis = parseInt(localStorage.getItem('satoshis')) || 0;
-        let videosVistos = parseInt(localStorage.getItem('videosVistos')) || 0;
-        document.getElementById('satoshis-count').textContent = totalSatoshis;
-        document.getElementById('videos-count').textContent = videosVistos;
-        actualizarBotonRetiro();
-        const sonidoRuleta = new Audio('https://mixkit.co'); 
-        const sonidoMonedas = new Audio('https://mixkit.co'); 
-        sonidoRuleta.loop = true; 
+        let conteoVideos = parseInt(localStorage.getItem('conteoVideos')) || 0;
+        let ultimoLanzamiento = parseInt(localStorage.getItem('ultimoLanzamiento')) || 0;
+
+        const dado = document.getElementById('dado');
+        const btnLanzar = document.getElementById('btnLanzar');
+        const satoshisCount = document.getElementById('satoshis-count');
+        const btnVideo = document.getElementById('btnVideo');
+        const videoCountDisplay = document.getElementById('video-count');
+
+        // Actualizar interfaz al cargar
+        satoshisCount.textContent = totalSatoshis;
+        videoCountDisplay.textContent = conteoVideos;
+
         function guardarDatos() {
             localStorage.setItem('satoshis', totalSatoshis);
-            localStorage.setItem('videosVistos', videosVistos);
-            actualizarBotonRetiro();
+            localStorage.setItem('conteoVideos', conteoVideos);
+            localStorage.setItem('ultimoLanzamiento', ultimoLanzamiento);
         }
-        function actualizarBotonRetiro() {
-            const btn = document.getElementById('btn-retirar');
-            btn.disabled = totalSatoshis < 20;
+
+        function verificarTemporizador() {
+            const ahora = Date.now();
+            const tiempoTranscurrido = ahora - ultimoLanzamiento;
+            const tiempoEspera = 5 * 60 * 1000; // 5 minutos en milisegundos
+
+            if (tiempoTranscurrido < tiempoEspera) {
+                btnLanzar.disabled = true;
+                const tiempoRestante = Math.ceil((tiempoEspera - tiempoTranscurrido) / 1000);
+                actualizarBotonTiempo(tiempoRestante);
+            } else {
+                btnLanzar.disabled = false;
+                btnLanzar.textContent = "¡Lanzar Dado!";
+            }
         }
-        function lanzarDado() {
-            const dadoElemento = document.getElementById('dado');
-            const botonLanzar = document.getElementById('btn-lanzar');
-            botonLanzar.disabled = true;
-            dadoElemento.classList.add('girando');
-            sonidoRuleta.play().catch(e => console.log("Audio en espera"));
-            let intervaloNumeros = setInterval(() => {
-                dadoElemento.textContent = Math.floor(Math.random() * 6) + 1;
-            }, 120);
-            setTimeout(() => {
-                clearInterval(intervaloNumeros);
-                sonidoRuleta.pause();
-                sonidoRuleta.currentTime = 0;
-                dadoElemento.classList.remove('girando');
-                const resultado = Math.floor(Math.random() * 6) + 1;
-                dadoElemento.textContent = resultado;
-                if (resultado >= 4) {totalSatoshis += 2;document.getElementById('satoshis-count').textContent = totalSatoshis;sonidoMonedas.play();}guardarDatos();let tiempoEspera = 10;botonLanzar.textContent = Espera (${tiempoEspera}s);let cuentaRegresiva = setInterval(() => {tiempoEspera--;botonLanzar.textContent = Espera (${tiempoEspera}s);if (tiempoEspera <= 0) {clearInterval(cuentaRegresiva);botonLanzar.disabled = false;botonLanzar.textContent = "¡Lanzar Dado!";}}, 1000);}, 1500);}function registrarClickVideo() {if (videosVistos < 100) {videosVistos++;totalSatoshis += 3;document.getElementById('videos-count').textContent = videosVistos;document.getElementById('satoshis-count').textContent = totalSatoshis;sonidoMonedas.play();guardarDatos();}}function procesarRetiro() {const wallet = document.getElementById('wallet-select').value;const address = document.getElementById('wallet-address').value.trim();if (!address) {alert("Por favor, introduce tu dirección de billetera.");return;}alert(¡Solicitud recibida con éxito!\n\nMonto: ${totalSatoshis} Satoshis\nMétodo: ${wallet.toUpperCase()}\nDirección: ${address}\n\nLos fondos se procesarán manualmente tras verificar las estadísticas en Adsterra.);totalSatoshis = 0;document.getElementById('satoshis-count').textContent = totalSatoshis;guardarDatos();}
-        document.getElementById('formRetiro').addEventListener('submit', function(event) {
-    if (totalSatoshis < 20) {
-        event.preventDefault(); 
-        alert("❌ Error: Necesitas acumular al menos 20 Satoshis para solicitar un retiro.");
-        return;
-    document.getElementById('formRetiro').addEventListener('submit', function(event) {
-    // 1. Frenamos por completo el envío predeterminado del navegador
-    event.preventDefault(); 
-    
-    // 2. Validamos el saldo con tu variable de Satoshis
-    if (totalSatoshis < 20) {
-        alert("❌ Error: Necesitas acumular al menos 20 Satoshis para solicitar un retiro.");
-        return; 
-    }
-    
-    // 3. Introducemos los puntos en el campo oculto antes de enviar
-    document.getElementById('formSats').value = totalSatoshis;
-    
-    // 4. Enviamos a Formspree en segundo plano
-    let formData = new FormData(this);
-    
-    fetch(this.action, {
-        method: this.method,
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(response => {
-        if (response.ok) {
-            alert("🚀 ¡Solicitud enviada! Tu pago será procesado manualmente tras revisar las impresiones.");
+
+        function actualizarBotonTiempo(segundos) {
+            const minutos = Math.floor(segundos / 60);
+            const segs Restantes = segundos % 60;
+            btnLanzar.textContent = `Espera ${minutos}:${segsRestantes < 10 ? '0' : ''}${segsRestantes}`;
             
-            // Opcional: Reiniciar saldo en pantalla tras retirar con éxito
-            totalSatoshis = 0;
-            document.getElementById('satoshis-count').textContent = totalSatoshis; 
-            guardarDatos(); 
-        } else {
-            alert("❌ Hubo un problema con el servidor de retiros. Inténtalo más tarde.");
+            const intervalo = setInterval(() => {
+                const ahora = Date.now();
+                const restante = Math.ceil((5 * 60 * 1000 - (ahora - ultimoLanzamiento)) / 1000);
+                
+                if (restante <= 0) {
+                    clearInterval(intervalo);
+                    btnLanzar.disabled = false;
+                    btnLanzar.textContent = "¡Lanzar Dado!";
+                } else {
+                    const m = Math.floor(restante / 60);
+                    const s = restante % 60;
+                    btnLanzar.textContent = `Espera ${m}:${s < 10 ? '0' : ''}${s}`;
+                }
+            }, 1000);
         }
-    })
-    .catch(error => {
-        alert("❌ Error de conexión. Inténtalo de nuevo.");
-    });
-});
+
+        // --- FUNCIONAMIENTO COMPLETO DEL DADO ---
+        btnLanzar.onclick = function() {
+            btnLanzar.disabled = true;
+            ultimoLanzamiento = Date.now();
+            dado.classList.add('girando');
+            dado.textContent = "🎲";
+
+            setTimeout(() => {
+                dado.classList.remove('girando');
+                const resultado = Math.floor(Math.random() * 6) + 1;
+                dado.textContent = resultado;
+
+                if (resultado >= 4) {
+                    totalSatoshis += 2;
+                    satoshisCount.textContent = totalSatoshis;
+                    alert(`🎉 ¡Sacaste un ${resultado}! Ganaste 2 Satoshis.`);
+                } else {
+                    alert(😢 Sacaste un ${resultado}. Inténtalo de nuevo en 5 minutos.);}guardarDatos();verificarTemporizador();}, 2000);};// --- RECOMPENSA DE VIDEO ---btnVideo.onclick = function() {if (conteoVideos >= 5) {alert("❌ Has alcanzado el límite diario de videos por hoy.");return;}btnVideo.disabled = true;btnVideo.textContent = "Cargando anuncio...";setTimeout(() => {conteoVideos++;totalSatoshis += 3;satoshisCount.textContent = totalSatoshis;videoCountDisplay.textContent = conteoVideos;btnVideo.disabled = false;btnVideo.textContent = "📺 Ver Video (+3 Sats)";alert("💎 ¡Gracias por apoyar la plataforma! Se te han acreditado +3 Satoshis.");guardarDatos();}, 3000);};// --- CONTROL SEGURO DE RETIRO CON AJAJX ---document.getElementById('formRetiro').addEventListener('submit', function(event) {event.preventDefault(); // Detiene la recarga molesta de Formspreeif (totalSatoshis < 20) {alert("❌ Error: Necesitas acumular al menos 20 Satoshis para poder solicitar un retiro.");return;}document.getElementById('formSats').value = totalSatoshis;let formData = new FormData(this);fetch(this.action, {method: this.method,body: formData,headers: { 'Accept': 'application/json' }}).then(response => {if (response.ok) {alert("🚀 ¡Solicitud enviada! Procesaremos tu pago manualmente en Speed Wallet tras revisar las impresiones.");// Reiniciar saldo en pantalla tras retirar con éxitototalSatoshis = 0;satoshisCount.textContent = totalSatoshis;guardarDatos();} else {alert("❌ Hubo un problema con el servidor de retiros. Inténtalo más tarde.");}}).catch(error => {alert("❌ Error de conexión de red. Inténtalo de nuevo.");});});// Revisar tiempo pendiente al abrir la páginaverificarTemporizador();
